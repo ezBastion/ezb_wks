@@ -16,7 +16,7 @@
 package Middleware
 
 import (
-	"ezb_wks/models"
+	"github.com/ezbastion/ezb_worker/models"
 
 	"github.com/gin-gonic/gin"
 )

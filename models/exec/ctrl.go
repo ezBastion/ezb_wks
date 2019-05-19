@@ -18,12 +18,13 @@ package exec
 import (
 	"bytes"
 	"encoding/json"
-	"ezb_wks/models"
 	"fmt"
 	"net/http"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/ezbastion/ezb_worker/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

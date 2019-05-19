@@ -17,7 +17,6 @@ package healthCheck
 
 import (
 	"crypto/sha256"
-	"ezb_wks/models"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -25,6 +24,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+
+	"github.com/ezbastion/ezb_worker/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shirou/gopsutil/cpu"

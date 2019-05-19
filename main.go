@@ -16,10 +16,11 @@
 package main
 
 import (
-	"ezb_wks/setup"
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/ezbastion/ezb_worker/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"

@@ -17,10 +17,11 @@ package Middleware
 
 import (
 	"errors"
-	"ezb_wks/models"
 	"fmt"
 	"net/http"
 	"runtime"
+
+	"github.com/ezbastion/ezb_worker/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

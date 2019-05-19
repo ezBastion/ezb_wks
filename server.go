@@ -19,11 +19,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"ezb_wks/Middleware"
-	"ezb_wks/models"
-	"ezb_wks/models/exec"
-	"ezb_wks/models/healthCheck"
-	"ezb_wks/models/wkslog"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -33,6 +28,12 @@ import (
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/ezbastion/ezb_worker/Middleware"
+	"github.com/ezbastion/ezb_worker/models"
+	"github.com/ezbastion/ezb_worker/models/exec"
+	"github.com/ezbastion/ezb_worker/models/healthCheck"
+	"github.com/ezbastion/ezb_worker/models/wkslog"
 
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
@@ -51,7 +52,6 @@ func mainGin(serverchan *chan bool) {
 	if err != nil {
 		panic(err)
 	}
-
 
 	/* log */
 	outlog := true
