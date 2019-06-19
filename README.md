@@ -6,7 +6,7 @@ The workers services, are in charge of running the scripts. They are like a remo
 ## SETUP
 
 
-### 1. Download ezb_wks from [GitHub](<https://github.com/ezBastion/ezb_wks/releases/latest>) or fork/clone it.
+### 1. Download ezb_wks from [GitHub](<https://github.com/ezBastion/ezb_worker/releases/latest>) or fork/clone it.
 
 ### 2. Open an admin command prompte, like CMD or Powershell.
 
