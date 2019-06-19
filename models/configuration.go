@@ -15,18 +15,20 @@
 
 package models
 
+import "github.com/ezbastion/ezb_lib/confmanager"
+
 type Configuration struct {
-	Listen          string   `json:"listen"`
-	ScriptPath      string   `json:"scriptpath"`
-	JobPath         string   `json:"jobpath"`
-	LogLevel        string   `json:"loglevel"`
-	PrivateKey      string   `json:"privatekey"`
-	PublicCert      string   `json:"publiccert"`
-	CaCert          string   `json:"cacert"`
-	ServiceName     string   `json:"servicename"`
-	ServiceFullName string   `json:"servicefullname"`
-	EzbPki          string   `json:"ezb_pki"`
-	SAN             []string `json:"san"`
-	LimitWarning    int      `json:"limitwarning"`
-	LimitMax        int      `json:"limitmax"`
+	Listen          string             `json:"listen"`
+	ScriptPath      string             `json:"scriptpath"`
+	JobPath         string             `json:"jobpath"`
+	Logger          confmanager.Logger `json:"logger"`
+	PrivateKey      string             `json:"privatekey"`
+	PublicCert      string             `json:"publiccert"`
+	CaCert          string             `json:"cacert"`
+	ServiceName     string             `json:"servicename"`
+	ServiceFullName string             `json:"servicefullname"`
+	EzbPki          string             `json:"ezb_pki"`
+	SAN             []string           `json:"san"`
+	LimitWarning    int                `json:"limitwarning"`
+	LimitMax        int                `json:"limitmax"`
 }

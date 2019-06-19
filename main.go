@@ -19,13 +19,24 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/ezbastion/ezb_worker/models"
 	"github.com/ezbastion/ezb_worker/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
 )
 
+var (
+	exPath string
+	conf   models.Configuration
+)
+
+func init() {
+	ex, _ := os.Executable()
+	exPath = filepath.Dir(ex)
+}
 func main() {
 	// setup.CheckFolder(isIntSess)
 	var isIntSess bool

@@ -111,7 +111,10 @@ func Setup(isIntSess bool) error {
 		conf.Listen = ":5500"
 		conf.ServiceFullName = "Easy Bastion worker"
 		conf.ServiceName = "ezb_wks"
-		conf.LogLevel = "warning"
+		conf.Logger.LogLevel = "warning"
+		conf.Logger.MaxSize = 10
+		conf.Logger.MaxBackups = 5
+		conf.Logger.MaxAge = 180
 		conf.CaCert = "cert/ca.crt"
 		conf.PrivateKey = "cert/ezb_wks.key"
 		conf.PublicCert = "cert/ezb_wks.crt"

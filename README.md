@@ -17,13 +17,18 @@ The workers services, are in charge of running the scripts. They are like a remo
 ```
 
 this commande will create folder and the default config.json file.
+
 ```json
 {
     "listen":":5005",
     "scriptpath":"E:\\05_script",
     "jobpath":"E:\\06_jobs",
-    "log": true,
-    "loglevel":"debug",
+    "logger": {
+        "loglevel": "debug",
+        "maxsize": 10,
+        "maxbackups": 5,
+        "maxage": 180
+    },
     "privatekey": "cert/ezb_wks.key",
     "publiccert": "cert/ezb_wks.crt",
     "cacert": "cert/ca.crt",
@@ -31,6 +36,12 @@ this commande will create folder and the default config.json file.
     "limitmax":30
 }
 ```
+
+- **loglevel**: Choose log level in debug,info,warning,error,critical.
+- **maxsize**: is the maximum size in megabytes of the log file before it gets rotated. It defaults to 100 megabytes.
+- **maxbackups**: MaxBackups is the maximum number of old log files to retain.
+- **maxage**: MaxAge is the maximum number of days to retain old log files based on the timestamp encoded in their filename.
+
 
 ### 4. Install Windows service and start it.
 
@@ -60,4 +71,4 @@ logrus    | MIT       | 1.0.4   | github.com/sirupsen/logrus
 go-fqdn   | Apache v2 | 0       | github.com/ShowMax/go-fqdn
 jwt-go    | MIT       | 3.2.0   | github.com/dgrijalva/jwt-go
 gopsutil  | BSD       | 2.15.01 | github.com/shirou/gopsutil
-
+lumberjack| MIT       | 2.1     | github.com/natefinch/lumberjack
