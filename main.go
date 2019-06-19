@@ -1,3 +1,5 @@
+//go:generate goversioninfo
+
 // This file is part of ezBastion.
 
 //     ezBastion is free software: you can redistribute it and/or modify
@@ -17,12 +19,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
-	"github.com/ezbastion/ezb_worker/models"
-	"github.com/ezbastion/ezb_worker/setup"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/ezbastion/ezb_wks/models"
+	"github.com/ezbastion/ezb_wks/setup"
 
 	"github.com/urfave/cli"
 	"golang.org/x/sys/windows/svc"
@@ -37,26 +40,26 @@ func init() {
 	ex, _ := os.Executable()
 	exPath = filepath.Dir(ex)
 }
+
 func main() {
-	// setup.CheckFolder(isIntSess)
-	var isIntSess bool
+
 	isIntSess, err := svc.IsAnInteractiveSession()
 	if err != nil {
 		log.Fatalf("failed to determine if we are running in an interactive session: %v", err)
 	}
 
 	if !isIntSess {
-		fmt.Println("isIntSess", isIntSess)
-		conf, err := setup.CheckConfig(isIntSess)
+		conf, err := setup.CheckConfig()
 		if err == nil {
 			runService(conf.ServiceName, false)
 		}
 		log.Fatal(err)
 		return
 	}
+
 	app := cli.NewApp()
 	app.Name = "ezb_wks"
-	app.Version = "0.1.2"
+	app.Version = "0.1.3"
 	app.Usage = "ezBastion worker service."
 
 	app.Commands = []cli.Command{
@@ -64,14 +67,14 @@ func main() {
 			Name:  "init",
 			Usage: "Genarate config file and PKI certificat.",
 			Action: func(c *cli.Context) error {
-				err := setup.Setup(true)
+				err := setup.Setup()
 				return err
 			},
 		}, {
 			Name:  "debug",
 			Usage: "Start ezb_wks in console.",
 			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig(true)
+				conf, _ := setup.CheckConfig()
 				runService(conf.ServiceName, true)
 				return nil
 			},
@@ -79,29 +82,45 @@ func main() {
 			Name:  "install",
 			Usage: "Add ezb_wks deamon windows service.",
 			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig(true)
-				return installService(conf.ServiceName, conf.ServiceFullName)
+				conf, _ := setup.CheckConfig()
+				err = installService(conf.ServiceName, conf.ServiceFullName)
+				if err != nil {
+					log.Fatalf("install ezb_wks service: %v", err)
+				}
+				return err
 			},
 		}, {
 			Name:  "remove",
 			Usage: "Remove ezb_wks deamon windows service.",
 			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig(true)
-				return removeService(conf.ServiceName)
+				conf, _ := setup.CheckConfig()
+				err = removeService(conf.ServiceName)
+				if err != nil {
+					log.Fatalf("remove ezb_wks service: %v", err)
+				}
+				return err
 			},
 		}, {
 			Name:  "start",
 			Usage: "Start ezb_wks deamon windows service.",
 			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig(true)
-				return startService(conf.ServiceName)
+				conf, _ := setup.CheckConfig()
+				err = startService(conf.ServiceName)
+				if err != nil {
+					log.Fatalf("start ezb_wks service: %v", err)
+				}
+				return err
 			},
 		}, {
 			Name:  "stop",
 			Usage: "Stop ezb_wks deamon windows service.",
 			Action: func(c *cli.Context) error {
-				conf, _ := setup.CheckConfig(true)
-				return controlService(conf.ServiceName, svc.Stop, svc.Stopped)
+				conf, _ := setup.CheckConfig()
+				err = controlService(conf.ServiceName, svc.Stop, svc.Stopped)
+				if err != nil {
+					log.Fatalf("stop ezb_wks service: %v", err)
+				}
+				return err
 			},
 		},
 	}

@@ -3,6 +3,9 @@
 *.db
 *.exe
 *.log
-config.json
+*.json
 *.out
 *.ps1
+*.ico
+*.syso
+*.zip

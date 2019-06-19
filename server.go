@@ -27,26 +27,26 @@ import (
 	"time"
 
 	"github.com/ezbastion/ezb_lib/logmanager"
-	"github.com/ezbastion/ezb_worker/Middleware"
-	"github.com/ezbastion/ezb_worker/models/exec"
-	"github.com/ezbastion/ezb_worker/models/healthCheck"
-	"github.com/ezbastion/ezb_worker/models/wkslog"
+	"github.com/ezbastion/ezb_wks/Middleware"
+	"github.com/ezbastion/ezb_wks/models/exec"
+	"github.com/ezbastion/ezb_wks/models/healthCheck"
+	"github.com/ezbastion/ezb_wks/models/wkslog"
+	"github.com/ezbastion/ezb_wks/setup"
 
 	"github.com/gin-gonic/contrib/ginrus"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/tkanos/gonfig"
 )
 
 func mainGin(serverchan *chan bool) {
 
-	err := gonfig.GetConf(path.Join(exPath, "/conf/config.json"), &conf)
+	conf, err := setup.CheckConfig()
 	if err != nil {
 		panic(err)
 	}
 
 	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, path.Join(exPath, "log/ezb_wks.log"), conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge)
-
+	log.Debug("start main")
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(ginrus.Ginrus(log.StandardLogger(), time.RFC3339, true))

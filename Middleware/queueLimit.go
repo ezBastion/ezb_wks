@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/ezbastion/ezb_worker/models"
+	"github.com/ezbastion/ezb_wks/models"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

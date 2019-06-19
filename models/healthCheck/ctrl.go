@@ -25,7 +25,7 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/ezbastion/ezb_worker/models"
+	"github.com/ezbastion/ezb_wks/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shirou/gopsutil/cpu"

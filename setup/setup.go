@@ -27,83 +27,73 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
-	"log"
+
 	"net"
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 
-	"github.com/ezbastion/ezb_worker/models"
-
 	fqdn "github.com/ShowMax/go-fqdn"
+	"github.com/ezbastion/ezb_lib/setupmanager"
+	"github.com/ezbastion/ezb_wks/models"
+	log "github.com/sirupsen/logrus"
 )
 
-var exPath string
+var (
+	exPath   string
+	conf     models.Configuration
+	confFile string
+)
 
 func init() {
 	ex, _ := os.Executable()
 	exPath = filepath.Dir(ex)
+	confFile = path.Join(exPath, "conf/config.json")
 }
 
-func CheckConfig(isIntSess bool) (conf models.Configuration, err error) {
-
-	confFile := path.Join(exPath, "conf/config.json")
+func CheckConfig() (conf models.Configuration, err error) {
 	raw, err := ioutil.ReadFile(confFile)
 	if err != nil {
 		return conf, err
 	}
 	json.Unmarshal(raw, &conf)
+	log.Debug("json config found and loaded.")
 	return conf, nil
 }
 
-func CheckFolder(isIntSess bool) {
+func checkFolder() error {
+	err := setupmanager.CheckFolder(exPath)
+	if err != nil {
+		return err
+	}
 
-	if _, err := os.Stat(path.Join(exPath, "cert")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "cert"), 0600)
-		if err != nil {
-			return
-		}
-		log.Println("Make cert folder.")
-	}
-	if _, err := os.Stat(path.Join(exPath, "log")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "log"), 0600)
-		if err != nil {
-			return
-		}
-		log.Println("Make log folder.")
-	}
-	if _, err := os.Stat(path.Join(exPath, "conf")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(exPath, "conf"), 0600)
-		if err != nil {
-			return
-		}
-		log.Println("Make conf folder.")
-	}
 	if _, err := os.Stat(path.Join(exPath, "script")); os.IsNotExist(err) {
 		err = os.MkdirAll(path.Join(exPath, "script"), 0600)
 		if err != nil {
-			return
+			return err
 		}
 		log.Println("Make script folder.")
 	}
 	if _, err := os.Stat(path.Join(exPath, "job")); os.IsNotExist(err) {
 		err = os.MkdirAll(path.Join(exPath, "job"), 0600)
 		if err != nil {
-			return
+			return err
 		}
 		log.Println("Make job folder.")
 	}
+	return nil
 }
 
-func Setup(isIntSess bool) error {
+func Setup() error {
 	_fqdn := fqdn.Get()
 	quiet := true
 	hostname, _ := os.Hostname()
-	confFile := path.Join(exPath, "conf/config.json")
-	CheckFolder(isIntSess)
-	conf, err := CheckConfig(isIntSess)
+	err := checkFolder()
+	if err != nil {
+		return err
+	}
+	conf, err := CheckConfig()
 	if err != nil {
 		quiet = false
 		conf.ScriptPath = path.Join(exPath, "script")
@@ -138,8 +128,8 @@ func Setup(isIntSess bool) error {
 		fmt.Println("ex: 10.20.1.2:6000 pki.domain.local:6000")
 
 		for {
-			p := askForValue("ezb_pki", conf.EzbPki, `^[a-zA-Z0-9-\.]+:[0-9]{4,5}$`)
-			c := askForConfirmation(fmt.Sprintf("pki address (%s) ok?", p))
+			p := setupmanager.AskForValue("ezb_pki", conf.EzbPki, `^[a-zA-Z0-9-\.]+:[0-9]{4,5}$`)
+			c := setupmanager.AskForConfirmation(fmt.Sprintf("pki address (%s) ok?", p))
 			if c {
 				conn, err := net.Dial("tcp", p)
 				if err != nil {
@@ -158,16 +148,20 @@ func Setup(isIntSess bool) error {
 		for {
 			tmp := conf.SAN
 
-			san := askForValue("SAN (comma separated list)", strings.Join(conf.SAN, ","), `(?m)^[[:ascii:]]*,?$`)
+			san := setupmanager.AskForValue("SAN (comma separated list)", strings.Join(conf.SAN, ","), `(?m)^[[:ascii:]]*,?$`)
 
 			t := strings.Replace(san, " ", "", -1)
 			tmp = strings.Split(t, ",")
-			c := askForConfirmation(fmt.Sprintf("SAN list %s ok?", tmp))
+			c := setupmanager.AskForConfirmation(fmt.Sprintf("SAN list %s ok?", tmp))
 			if c {
 				conf.SAN = tmp
 				break
 			}
 		}
+
+		c, _ := json.Marshal(conf)
+		ioutil.WriteFile(confFile, c, 0600)
+		log.Println(confFile, " saved.")
 	}
 
 	if os.IsNotExist(fica) || os.IsNotExist(fipriv) || os.IsNotExist(fipub) {
@@ -176,11 +170,6 @@ func Setup(isIntSess bool) error {
 		caFile := path.Join(exPath, conf.CaCert)
 		request := newCertificateRequest(conf.ServiceName, 730, conf.SAN)
 		generate(request, conf.EzbPki, certFile, keyFile, caFile)
-	}
-	if quiet == false {
-		c, _ := json.Marshal(conf)
-		ioutil.WriteFile(confFile, c, 0600)
-		log.Println(confFile, " saved.")
 	}
 
 	return nil
@@ -316,6 +305,7 @@ func generate(certificate *x509.CertificateRequest, ezbpki, certFilename, keyFil
 	caOut.Close()
 
 }
+
 func validateCertificate(newCert *x509.Certificate, rootCert *x509.Certificate) error {
 	roots := x509.NewCertPool()
 	roots.AddCert(rootCert)
@@ -332,46 +322,4 @@ func validateCertificate(newCert *x509.Certificate, rootCert *x509.Certificate) 
 	fmt.Println("Successfully verified chain of trust.")
 
 	return nil
-}
-
-func askForConfirmation(s string) bool {
-	reader := bufio.NewReader(os.Stdin)
-
-	for {
-		fmt.Printf("\n%s [y/n]: ", s)
-
-		response, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		response = strings.ToLower(strings.TrimSpace(response))
-
-		if response == "y" || response == "yes" {
-			return true
-		} else if response == "n" || response == "no" {
-			return false
-		}
-	}
-}
-func askForValue(s, def string, pattern string) string {
-	reader := bufio.NewReader(os.Stdin)
-	re := regexp.MustCompile(pattern)
-	for {
-		fmt.Printf("%s [%s]: ", s, def)
-
-		response, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		response = strings.TrimSpace(response)
-		if response == "" {
-			return def
-		} else if re.MatchString(response) {
-			return response
-		} else {
-			fmt.Printf("[%s] wrong format, must match (%s)\n", response, pattern)
-		}
-	}
 }
