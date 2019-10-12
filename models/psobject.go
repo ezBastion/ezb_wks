@@ -15,50 +15,44 @@
 
 package models
 
-import (
-	"encoding/json"
-	"time"
-)
+// type PsRequest struct {
+// 	Meta map[string]string `json:"meta"`
+// 	Data map[string]string `json:"data"`
+// }
 
-type PsRequest struct {
-	Meta map[string]string `json:"meta"`
-	Data map[string]string `json:"data"`
-}
+// // PsReturn was the json returning model
+// type PsReturn struct {
+// 	ID         int             `json:"id"`
+// 	CreateDate time.Time       `json:"createddate"`
+// 	UpdateDate time.Time       `json:"updatedate"`
+// 	Step       string          `json:"step"`
+// 	Status     string          `json:"status"`
+// 	Result     json.RawMessage `json:"result"`
+// 	Message    string          `json:"message"`
+// }
 
-// PsReturn was the json returning model
-type PsReturn struct {
-	ID         int             `json:"id"`
-	CreateDate time.Time       `json:"createddate"`
-	UpdateDate time.Time       `json:"updatedate"`
-	Step       string          `json:"step"`
-	Status     string          `json:"status"`
-	Result     json.RawMessage `json:"result"`
-	Message    string          `json:"message"`
-}
+// type JobStatus uint8
 
-type JobStatus uint8
+// const (
+// 	// PENDING: the job is created but not started
+// 	PENDING JobStatus = iota
+// 	RUNNING
+// 	FAILED
+// 	FINISH
+// )
 
-const (
-	// PENDING: the job is created but not started
-	PENDING JobStatus = iota
-	RUNNING
-	FAILED
-	FINISH
-)
+// func Status(i int) string {
+// 	p := [4]string{"PENDING", "RUNNING", "FAILED", "FINISH"}
+// 	return p[i]
+// }
 
-func Status(i int) string {
-	p := [4]string{"PENDING", "RUNNING", "FAILED", "FINISH"}
-	return p[i]
-}
-
-type EzbJobs struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Enable   bool   `json:"enable"`
-	Comment  string `json:"comment"`
-	Checksum string `json:"checksum"`
-	Path     string `json:"path"`
-	Cache    int    `json:"cache"`
-	Async    bool   `json:"async"`
-	Output   string `json:"output"`
-}
+// type EzbJobs struct {
+// 	ID       int    `json:"id"`
+// 	Name     string `json:"name"`
+// 	Enable   bool   `json:"enable"`
+// 	Comment  string `json:"comment"`
+// 	Checksum string `json:"checksum"`
+// 	Path     string `json:"path"`
+// 	Cache    int    `json:"cache"`
+// 	Output   string `json:"output"`
+// }

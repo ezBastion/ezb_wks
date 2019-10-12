@@ -15,13 +15,24 @@
 
 package exec
 
-type EzbJob struct {
-	Name      string
-	Params    map[string]string
-	Async     bool
-	Path      string
-	Xtrack    string
-	Token     string
-	Requester string
-	Checksum  string
+// type EzbJob struct {
+// 	Name      string
+// 	Params    map[string]string
+// 	Async     bool
+// 	Path      string
+// 	Xtrack    string
+// 	Token     string
+// 	Requester string
+// 	Checksum  string
+// }
+
+type EzbJobs struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Enable   bool   `json:"enable"`
+	Comment  string `json:"comment"`
+	Checksum string `json:"checksum"`
+	Path     string `json:"path"`
+	Cache    int    `json:"cache"`
+	Output   string `json:"output"`
 }

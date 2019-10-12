@@ -30,6 +30,7 @@ import (
 	"github.com/ezbastion/ezb_wks/Middleware"
 	"github.com/ezbastion/ezb_wks/models/exec"
 	"github.com/ezbastion/ezb_wks/models/healthCheck"
+	"github.com/ezbastion/ezb_wks/models/tasks"
 	"github.com/ezbastion/ezb_wks/models/wkslog"
 	"github.com/ezbastion/ezb_wks/setup"
 
@@ -56,6 +57,7 @@ func mainGin(serverchan *chan bool) {
 	healthCheck.Routes(r)
 	wkslog.Routes(r)
 	exec.Routes(r)
+	tasks.Routes(r)
 	caCert, err := ioutil.ReadFile(path.Join(exPath, conf.CaCert))
 	if err != nil {
 		log.Fatal(err)
