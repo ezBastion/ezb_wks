@@ -36,3 +36,12 @@ type EzbJobs struct {
 	Cache    int    `json:"cache"`
 	Output   string `json:"output"`
 }
+
+type EzbParams struct {
+	Data map[string]string `json:"data"`
+	Meta EzbParamMeta      `json:"meta"`
+}
+
+type EzbParamMeta struct {
+	Job EzbJobs `json:"job"`
+}

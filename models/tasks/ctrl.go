@@ -29,7 +29,7 @@ func GetResult(c *gin.Context) {
 	conf, _ := c.MustGet("conf").(models.Configuration)
 	taskPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 	file := path.Join(taskPath, "output.json")
-	if !checkToeknID(taskPath, tokenID) {
+	if !checkTokenID(taskPath, tokenID) {
 		logg.Error("log file not found")
 		c.AbortWithError(http.StatusBadRequest, errors.New("#I0001"))
 		return
@@ -67,7 +67,7 @@ func GetStatus(c *gin.Context) {
 	conf, _ := c.MustGet("conf").(models.Configuration)
 	taskPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 	file := path.Join(taskPath, "status.json")
-	if !checkToeknID(taskPath, tokenID) {
+	if !checkTokenID(taskPath, tokenID) {
 		logg.Error("log file not found")
 		c.AbortWithError(http.StatusBadRequest, errors.New("#I0003"))
 		return
@@ -99,7 +99,7 @@ func GetLog(c *gin.Context) {
 	conf, _ := c.MustGet("conf").(models.Configuration)
 	taskPath := path.Join(strings.Replace(conf.JobPath, "\\", "/", -1), uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 	file := path.Join(taskPath, "trace.log")
-	if !checkToeknID(taskPath, tokenID) {
+	if !checkTokenID(taskPath, tokenID) {
 		logg.Error("#I0005 log file not found")
 		c.String(http.StatusBadRequest, "#I0005 log file not found")
 		c.Abort()
@@ -126,8 +126,7 @@ func GetLog(c *gin.Context) {
 	c.Data(http.StatusOK, "text/plain", decoded)
 
 }
-
-func checkToeknID(taskPath, tokenID string) bool {
+func checkTokenID(taskPath, tokenID string) bool {
 	file := path.Join(taskPath, "status.json")
 	if _, err := os.Stat(file); os.IsNotExist(err) {
 		return false

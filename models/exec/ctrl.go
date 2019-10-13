@@ -50,20 +50,17 @@ func run(c *gin.Context) {
 	conf, _ = c.MustGet("conf").(models.Configuration)
 	polling := c.GetHeader("X-Polling")
 	xtrack = c.GetHeader("X-Track")
-	var ezbjob EzbJobs
-	params := make(map[string]string)
+	var params EzbParams
 	err := c.ShouldBindJSON(&params)
 	if err != nil {
-		c.AbortWithError(http.StatusForbidden, err)
+		c.String(http.StatusInternalServerError, "#E0002 bind parameters error", err)
 		return
 	}
 	psParams := fmt.Sprintf("-xtrack '%s' ", xtrack)
-	for i, h := range params {
+	for i, h := range params.Data {
 		psParams = fmt.Sprintf("%s -%s '%s' ", psParams, i, h)
 	}
-	js := strings.NewReader(params["job"])
-	json.NewDecoder(js).Decode(&ezbjob)
-	psscript := filepath.Join(conf.ScriptPath, ezbjob.Path)
+	psscript := filepath.Join(conf.ScriptPath, params.Meta.Job.Path)
 	if polling == "true" {
 		runTask(c, psscript, psParams)
 	} else {
@@ -77,16 +74,16 @@ func runJob(c *gin.Context, psscript string, psParams string) {
 		"xtrack":     xtrack,
 	})
 
+	logg.Debug("start")
 	cmd := exec.Command("powershell", "-NoLogo", "-NonInteractive", "-Command", "&{", psscript, " ", psParams, "}")
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	cmd.Run()
-
 	if stderr.Len() != 0 {
 		errStr := stderr.String()
-		logg.Printf("Runnning %s  failed with err: \n***************\n%s\n***************\n", psscript, errStr)
-		c.JSON(http.StatusInternalServerError, errStr)
+		logg.Error("#E0001", errStr)
+		c.String(http.StatusInternalServerError, "#E0001 Powershell error: %s", errStr)
 	} else {
 		ret := json.RawMessage(stdout.Bytes())
 		c.JSON(http.StatusOK, ret)
