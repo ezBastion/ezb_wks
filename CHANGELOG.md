@@ -3,7 +3,6 @@
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## 0.2.1 - 2019-10-22
-- set tokenid to anonymous when no Authorization header found
 - Fix empty output, return 204 "no content"
 - use struc interface between srv & wks
 
