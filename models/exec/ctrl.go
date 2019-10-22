@@ -84,9 +84,13 @@ func runJob(c *gin.Context, psscript string, psParams string) {
 		errStr := stderr.String()
 		logg.Error("#E0001", errStr)
 		c.String(http.StatusInternalServerError, "#E0001 Powershell error: %s", errStr)
-	} else {
+		return
+	}
+	if stdout.Len() != 0 {
 		ret := json.RawMessage(stdout.Bytes())
 		c.JSON(http.StatusOK, ret)
+	} else {
+		c.JSON(http.StatusNoContent, "")
 	}
 }
 
