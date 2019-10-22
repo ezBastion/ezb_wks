@@ -59,7 +59,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "ezb_wks"
-	app.Version = "0.1.4"
+	app.Version = "0.2.1"
 	app.Usage = "ezBastion worker service."
 
 	app.Commands = []cli.Command{
