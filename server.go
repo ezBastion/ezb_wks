@@ -46,7 +46,7 @@ func mainGin(serverchan *chan bool) {
 		panic(err)
 	}
 
-	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, path.Join(exPath, "log/ezb_wks.log"), conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge)
+	logmanager.SetLogLevel(conf.Logger.LogLevel, exPath, path.Join(exPath, "log/ezb_wks.log"), conf.Logger.MaxSize, conf.Logger.MaxBackups, conf.Logger.MaxAge, true, true, true)
 	log.Debug("start main")
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
